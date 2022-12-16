@@ -113,18 +113,19 @@
         </button>
       </div>
       <div class="modal-body">
-        <form>
+        <form id="submitForm">
           <div class="form-group">
             <label for="submitAuthor"><b>Author</b></label>
-            <input type="text" class="form-control" id="submitAuthor" placeholder="Author Name">
+            <input type="text" class="form-control" id="submitAuthor" placeholder="Author name">
           </div>
           <div class="form-group">
             <label for="submitTitle"><b>Title</b></label>
-            <input type="text" class="form-control" id="submitTitle" placeholder="Story Title">
+            <input type="text" class="form-control" id="submitTitle" placeholder="Story title">
           </div>
           <div class="form-group">
             <label for="submitUrl"><b>Url</b></label>
-            <input type="url" class="form-control" id="submitUrl" placeholder="Story Url">
+            <input type="url" class="form-control" id="submitUrl" placeholder="Story url"
+            data-toggle="popover" data-placement="top" data-content="The url is not valid.">
           </div>
         </form>
       </div>

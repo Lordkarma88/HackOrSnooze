@@ -4,7 +4,6 @@
 let storyList;
 
 /** Get and show stories when site first loads. */
-
 async function getAndShowStoriesOnStart() {
   storyList = await StoryList.getStories();
   $storiesLoadingMsg.remove();
@@ -16,9 +15,7 @@ async function getAndShowStoriesOnStart() {
  * A render method to render HTML for an individual Story instance
  * - story: an instance of Story
  *
- * Returns the markup for the story.
- */
-
+ * Returns the markup for the story. */
 function generateStoryMarkup(story) {
   // console.debug("generateStoryMarkup", story);
 
@@ -36,7 +33,6 @@ function generateStoryMarkup(story) {
 }
 
 /** Gets list of stories from server, generates their HTML, and puts on page. */
-
 function putStoriesOnPage() {
   console.debug("putStoriesOnPage");
 
@@ -50,3 +46,36 @@ function putStoriesOnPage() {
 
   $allStoriesList.show();
 }
+
+$("#submitStory").on("click", async () => {
+  // Get values from form
+  const author = $("#submitAuthor").val();
+  const title = $("#submitTitle").val();
+  const url = $("#submitUrl").val();
+
+  // Do nothing if form is empty
+  if ((author === "") | (title === "")) return;
+  // Check if url is valid
+  try {
+    new URL(url);
+  } catch (error) {
+    // If invalid, show popover for 5 sec (defined in index.html)
+    $("#submitUrl").popover("show");
+    setTimeout(() => {
+      $("#submitUrl").popover("hide");
+    }, 5000);
+    return;
+  }
+
+  // Post story to API
+  const story = await StoryList.addStory(currentUser, { title, author, url });
+  // Add story to global var
+  storyList.stories.unshift(story);
+  putStoriesOnPage();
+
+  // Dismiss and empty modal
+  $("#submitModal").modal("hide");
+  $("#submitAuthor").val("");
+  $("#submitTitle").val("");
+  $("#submitUrl").val("");
+});
