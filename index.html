@@ -20,11 +20,7 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Hack or Snooze</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
-  <link
-      rel="stylesheet"
-      href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
-      integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
-      crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.css">
   <link rel="stylesheet" href="css/site.css">
   <link rel="stylesheet" href="css/user.css">
   <link rel="stylesheet" href="css/stories.css">
@@ -33,25 +29,40 @@
 </head>
 
 <body class="bg-dark">
-
 <!-- top navigation bar -->
-<nav class="navbar navbar-dark navbar-expand-md">
+<nav class="navbar navbar-dark navbar-expand rounded justify-content-between">
   <a class="navbar-brand" href="#" id="nav-all">Hack or Snooze</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNav">
-    <div class="navbar-nav nav-right">
-      <a class="nav-item nav-link" href="#" id="nav-sumbit" data-toggle="modal" data-target="#submitModal">submit</a>
-      <a class="nav-item nav-link" href="#" id="nav-login">login/signup</a>
-      <a class="nav-item nav-link" href="#" id="nav-user-profile"></a>
-      <a class="nav-item nav-link hidden" id="nav-logout" href="#"><small>(logout)</small></a>
+  <div class="navbar-nav" id="nav-links">
+    <!-- standard links -->
+    <a class="nav-link d-none" href="#" id="nav-sumbit" data-toggle="modal" data-target="#submit-modal">Submit</a>
+    <a class="nav-link d-none" href="#" id="nav-fav" data-toggle="modal" data-target="#fav-modal">Favorites</a>
+    <a class="nav-link d-none" href="#" id="nav-user-profile"></a>
+    <!-- login dropdown -->
+    <div class="btn-group dropdown">
+      <a class="nav-link dropdown-toggle" data-toggle="dropdown" data-display="static" href="#">Login</a>
+      <div class="dropdown-menu dropdown-menu-right px-3 py-2" id="login-dropdown">
+        <form id="login-form">
+          <div class="form-group">
+            <label for="username-login">Username</label>
+            <input type="text" class="form-control" id="username-login">
+          </div>
+          <div class="form-group">
+            <label for="pwd-login">Password</label>
+            <input type="password" class="form-control" id="pwd-login">
+          </div>
+          <div class="row d-flex justify-content-around">
+            <button class="btn btn-primary col-4">Sign in</button>
+            <button class="btn btn-outline-secondary col-4" data-toggle="modal" data-target="#auth-modal" type="reset" id="sign-up-btn">Sign up</button>
+          </div>
+        </form>
+      </div>
+      <a class="nav-link d-none" id="nav-logout" href="#"><small>(logout)</small></a>
     </div>
   </div>
 </nav>
 
 <!-- area for stories (all stories, user stories, favorites) -->
-<section class="stories-container container">
+<section class="container bg-light p-3">
 
   <!-- loading message (removed by JS after stories loaded) -->
   <div id="stories-loading-msg">Loading&hellip;</div>
@@ -60,78 +71,98 @@
   <ol id="all-stories-list" class="stories-list"></ol>
 
 </section>
-
-<!-- Login and signup forms -->
-<section class="account-forms-container container">
-
-  <!-- Login form -->
-  <form action="#" id="login-form" class="account-form hidden" method="post">
-    <h4>Login</h4>
-    <div class="login-input">
-      <label for="login-username">username</label>
-      <input id="login-username" autocomplete="current-username">
-    </div>
-    <div class="login-input">
-      <label for="login-password">password</label>
-      <input id="login-password" type="password" autocomplete="current-password">
-    </div>
-    <button type="submit">login</button>
-    <hr>
-  </form>
-
-  <!-- Signup form -->
-  <form
-      action="#"
-      id="signup-form"
-      class="account-form hidden"
-      method="post">
-    <h4>Create Account</h4>
-    <div class="login-input">
-      <label for="signup-name">name</label>
-      <input id="signup-name" autocapitalize="words">
-    </div>
-    <div class="login-input">
-      <label for="signup-username">username</label>
-      <input id="signup-username" autocomplete="new-username">
-    </div>
-    <div class="login-input">
-      <label for="signup-password">password</label>
-      <input id="signup-password" autocomplete="new-password" type="password">
-    </div>
-    <button type="submit">create account</button>
-  </form>
-</section>
-
-<!-- Submit Modal -->
-<div class="modal fade" id="submitModal" tabindex="-1" role="dialog">
+<!-- Signup form -->
+<div class="modal fade" id="auth-modal" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title" id="submitModalLabel"><b>Submit story</b></h4>
+        <h4 class="modal-title"><b>Sign Up</b></h4>
+        <button type="button" class="close" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+  
+        <!-- Signup form -->
+        <form action="#" id="signup-form" class="account-form" method="post">
+          <h4>Create Account</h4>
+          <div class="login-input">
+            <label for="signup-name">name</label>
+            <input id="signup-name" autocapitalize="words">
+          </div>
+          <div class="login-input">
+            <label for="signup-username">username</label>
+            <input id="signup-username" autocomplete="new-username">
+          </div>
+          <div class="login-input">
+            <label for="signup-password">password</label>
+            <input id="signup-password" autocomplete="new-password" type="password">
+          </div>
+          <button type="submit">create account</button>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Submit Modal -->
+<div class="modal fade" id="submit-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><b>Submit story</b></h4>
+        <button type="button" class="close" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
+      </div>
+      <form id="submit-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="submit-author"><b>Author</b></label>
+            <input type="text" class="form-control" id="submit-author" placeholder="Author name">
+          </div>
+          <div class="form-group">
+            <label for="submit-title"><b>Title</b></label>
+            <input type="text" class="form-control" id="submit-title" placeholder="Story title">
+          </div>
+          <div class="form-group">
+            <label for="submit-url"><b>Url</b></label>
+            <input type="url" class="form-control" id="submit-url" placeholder="Story url"
+            data-toggle="popover" data-placement="top" data-content="The url is not valid.">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary" id="submit-story">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Favorites Modal -->
+<div class="modal fade" id="fav-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="favModalLabel"><b>Favorite stories</b></h4>
         <button type="button" class="close" data-dismiss="modal">
           <span>&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <form id="submitForm">
-          <div class="form-group">
-            <label for="submitAuthor"><b>Author</b></label>
-            <input type="text" class="form-control" id="submitAuthor" placeholder="Author name">
-          </div>
-          <div class="form-group">
-            <label for="submitTitle"><b>Title</b></label>
-            <input type="text" class="form-control" id="submitTitle" placeholder="Story title">
-          </div>
-          <div class="form-group">
-            <label for="submitUrl"><b>Url</b></label>
-            <input type="url" class="form-control" id="submitUrl" placeholder="Story url"
-            data-toggle="popover" data-placement="top" data-content="The url is not valid.">
-          </div>
-        </form>
+        <!-- List of fav stories -->
+        <ol id="fav-stories-list" class="stories-list">
+          No favorites yet!
+        </ol>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" id="submitStory">Submit</button>
       </div>
     </div>
   </div>

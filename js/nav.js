@@ -8,26 +8,21 @@
 function navAllStories(evt) {
   console.debug("navAllStories", evt);
   hidePageComponents();
-  putStoriesOnPage();
+  putStoriesOn($allStoriesList, storyList.stories);
 }
 
 $body.on("click", "#nav-all", navAllStories);
 
-/** Show login/signup on click on "login" */
-function navLoginClick(evt) {
-  console.debug("navLoginClick", evt);
-  hidePageComponents();
-  $loginForm.show();
-  $signupForm.show();
-}
+// /** When a user first logins in, update the navbar to reflect that. */
+// function updateNavOnLogin() {
+//   console.debug("updateNavOnLogin");
+// }
 
-$navLogin.on("click", navLoginClick);
+/** Hide dropdown when button is clicked inside */
+$("#login-dropdown #sign-up-btn").on("click", hideLogin);
 
-/** When a user first logins in, update the navbar to reflect that. */
-function updateNavOnLogin() {
-  console.debug("updateNavOnLogin");
-  $(".main-nav-links").show();
-  $navLogin.hide();
-  $navLogOut.show();
-  $navUserProfile.text(`${currentUser.username}`).show();
+function hideLogin() {
+  $("#login-dropdown").dropdown("toggle");
+  // Prevents dropdown from going away on any click
+  $("#login-dropdown").unbind("click");
 }

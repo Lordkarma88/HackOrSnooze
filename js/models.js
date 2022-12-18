@@ -19,10 +19,9 @@ class Story {
     this.createdAt = createdAt;
   }
 
-  /** Parses hostname out of URL and returns it. */
+  /** Parses hostname out of URL using URL object method and returns it. */
   getHostName() {
-    // UNIMPLEMENTED: complete this function!
-    return "hostname.com";
+    return new URL(this.url).hostname;
   }
 }
 
@@ -76,15 +75,11 @@ class StoryList {
 }
 
 /******************************************************************************
- * User: a user in the system (only used to represent the current user)
- */
-
+ * User: a user in the system (only used to represent the current user) */
 class User {
   /** Make user instance from obj of user data and a token:
    *   - {username, name, createdAt, favorites[], ownStories[]}
-   *   - token
-   */
-
+   *   - token */
   constructor(
     { username, name, createdAt, favorites = [], ownStories = [] },
     token
@@ -105,9 +100,7 @@ class User {
    *
    * - username: a new username
    * - password: a new password
-   * - name: the user's full name
-   */
-
+   * - name: the user's full name */
   static async signup(username, password, name) {
     const response = await axios({
       url: `${BASE_URL}/signup`,
@@ -132,9 +125,7 @@ class User {
   /** Login in user with API, make User instance & return it.
 
    * - username: an existing user's username
-   * - password: an existing user's password
-   */
-
+   * - password: an existing user's password */
   static async login(username, password) {
     const response = await axios({
       url: `${BASE_URL}/login`,
@@ -157,9 +148,7 @@ class User {
   }
 
   /** When we already have credentials (token & username) for a user,
-   *   we can log them in automatically. This function does that.
-   */
-
+   *   we can log them in automatically. This function does that. */
   static async loginViaStoredCredentials(token, username) {
     try {
       const response = await axios({
@@ -184,5 +173,26 @@ class User {
       console.error("loginViaStoredCredentials failed", err);
       return null;
     }
+  }
+
+  /** Add story to user favorites in api and  */
+  async favStory(action, storyId) {
+    const { username, loginToken } = this;
+    const method = action === "add" ? "POST" : "DELETE";
+
+    // Change user api
+    await axios({
+      url: `${BASE_URL}/users/${username}/favorites/${storyId}`,
+      method,
+      data: { token: loginToken },
+    });
+  }
+
+  async rmFavStory(storyId) {
+    const { username, loginToken } = this;
+    // Delete fav from user api (delete needs {data obj})
+    await axios.delete(`${BASE_URL}/users/${username}/favorites/${storyId}`, {
+      data: { token: loginToken },
+    });
   }
 }

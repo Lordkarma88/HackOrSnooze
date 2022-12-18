@@ -14,14 +14,17 @@ async function login(evt) {
   evt.preventDefault();
 
   // grab the username and password
-  const username = $("#login-username").val();
-  const password = $("#login-password").val();
+  const username = $("#username-login").val();
+  const password = $("#pwd-login").val();
+
+  if ((username === "") | (password === "")) return;
 
   // User.login retrieves user info from API and returns User instance
   // which we'll make the globally-available, logged-in user.
   currentUser = await User.login(username, password);
 
   $loginForm.trigger("reset");
+  hideLogin();
 
   saveUserCredentialsInLocalStorage();
   updateUIOnUserLogin();
@@ -106,11 +109,16 @@ function saveUserCredentialsInLocalStorage() {
  * - update nav bar options for logged-in user
  * - generate the user profile part of the page
  */
-
 function updateUIOnUserLogin() {
   console.debug("updateUIOnUserLogin");
 
-  $allStoriesList.show();
+  // Update all stories to show favs
+  putStoriesOn($allStoriesList, storyList.stories);
+  putStoriesOn($favStoriesList, currentUser.favorites);
 
-  updateNavOnLogin();
+  // Hide login and show everything else
+  $(".nav-link").toggleClass("d-none");
+  $navUserProfile.text(`${currentUser.username}`);
+
+  // updateNavOnLogin();
 }

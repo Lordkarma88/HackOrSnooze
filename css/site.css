@@ -33,15 +33,24 @@ a:hover {
 /* Site layout */
 
 /* This is the basic box that the main part of the page goes into */
-.container {
+/* .container {
   display: flex;
   flex-direction: column;
   align-self: center;
   background-color: #f6f6ef;
+} */
+
+.modal-header {
+  background-color: #02b;
+  color: #f6f6ef;
 }
 
-.hidden {
-  display: none;
+.modal-header .close {
+  color: #f6f6ef;
+}
+
+.fa-star {
+  cursor: pointer;
 }
 
 
