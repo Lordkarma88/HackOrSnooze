@@ -37,3 +37,11 @@
 .story-user {
   display: block;
 }
+
+.fa-trash-can {
+  cursor: pointer;
+}
+
+.fa-star {
+  cursor: pointer;
+}

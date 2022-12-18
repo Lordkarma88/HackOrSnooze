@@ -7,12 +7,13 @@ const $body = $("body");
 const $storiesLoadingMsg = $("#stories-loading-msg");
 const $allStoriesList = $("#all-stories-list");
 const $favStoriesList = $("#fav-stories-list");
+const $userStoriesList = $("#user-stories-list");
 
 const $loginForm = $("#login-form");
 const $signupForm = $("#signup-form");
 
 const $navLogin = $("#nav-login");
-const $navUserProfile = $("#nav-user-profile");
+const $navUser = $("#nav-user");
 const $navLogOut = $("#nav-logout");
 
 /** To make it easier for individual components to show just themselves, this
@@ -20,13 +21,12 @@ const $navLogOut = $("#nav-logout");
  * calling this, individual components can re-show just what they want.
  */
 
-function hidePageComponents() {
-  const components = [$allStoriesList, $loginForm, $signupForm];
-  components.forEach((c) => c.hide());
-}
+// function hidePageComponents() {
+//   const components = [$allStoriesList, $loginForm, $signupForm];
+//   components.forEach((c) => c.hide());
+// }
 
 /** Overall function to kick off the app. */
-
 async function start() {
   console.debug("start");
 

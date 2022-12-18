@@ -14,14 +14,19 @@ async function login(evt) {
   evt.preventDefault();
 
   // grab the username and password
-  const username = $("#username-login").val();
-  const password = $("#pwd-login").val();
+  const username = $("#login-username").val();
+  const password = $("#login-pwd").val();
 
   if ((username === "") | (password === "")) return;
 
   // User.login retrieves user info from API and returns User instance
   // which we'll make the globally-available, logged-in user.
-  currentUser = await User.login(username, password);
+  try {
+    currentUser = await User.login(username, password);
+  } catch (error) {
+    $("#login-err-msg").css("opacity", 100);
+    return;
+  }
 
   $loginForm.trigger("reset");
   hideLogin();
@@ -33,7 +38,6 @@ async function login(evt) {
 $loginForm.on("submit", login);
 
 /** Handle signup form submission. */
-
 async function signup(evt) {
   console.debug("signup", evt);
   evt.preventDefault();
@@ -42,14 +46,21 @@ async function signup(evt) {
   const username = $("#signup-username").val();
   const password = $("#signup-password").val();
 
+  if ((name === "") | (username === "") | (password === "")) return;
+
   // User.signup retrieves user info from API and returns User instance
   // which we'll make the globally-available, logged-in user.
-  currentUser = await User.signup(username, password, name);
+  try {
+    currentUser = await User.signup(username, password, name);
+  } catch (error) {
+    $("#signup-err-msg").css("opacity", 100);
+    return;
+  }
 
   saveUserCredentialsInLocalStorage();
   updateUIOnUserLogin();
 
-  $signupForm.trigger("reset");
+  $("#signup-modal").modal("hide");
 }
 
 $signupForm.on("submit", signup);
@@ -58,7 +69,6 @@ $signupForm.on("submit", signup);
  *
  * Remove their credentials from localStorage and refresh page
  */
-
 function logout(evt) {
   console.debug("logout", evt);
   localStorage.clear();
@@ -67,6 +77,12 @@ function logout(evt) {
 
 $navLogOut.on("click", logout);
 
+/** Handle click of Delete User button */
+$("#user-del-btn").on("click", async () => {
+  await currentUser.delete();
+  logout();
+});
+
 /******************************************************************************
  * Storing/recalling previously-logged-in-user with localStorage
  */
@@ -74,7 +90,6 @@ $navLogOut.on("click", logout);
 /** If there are user credentials in local storage, use those to log in
  * that user. This is meant to be called on page load, just once.
  */
-
 async function checkForRememberedUser() {
   console.debug("checkForRememberedUser");
   const token = localStorage.getItem("token");
@@ -83,6 +98,7 @@ async function checkForRememberedUser() {
 
   // try to log in with these credentials (will be null if login failed)
   currentUser = await User.loginViaStoredCredentials(token, username);
+  if (!currentUser) localStorage.clear();
 }
 
 /** Sync current user information to localStorage.
@@ -90,7 +106,6 @@ async function checkForRememberedUser() {
  * We store the username/token in localStorage so when the page is refreshed
  * (or the user revisits the site later), they will still be logged in.
  */
-
 function saveUserCredentialsInLocalStorage() {
   console.debug("saveUserCredentialsInLocalStorage");
   if (currentUser) {
@@ -118,7 +133,5 @@ function updateUIOnUserLogin() {
 
   // Hide login and show everything else
   $(".nav-link").toggleClass("d-none");
-  $navUserProfile.text(`${currentUser.username}`);
-
-  // updateNavOnLogin();
+  $navUser.text(`${currentUser.username}`);
 }

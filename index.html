@@ -36,23 +36,24 @@
     <!-- standard links -->
     <a class="nav-link d-none" href="#" id="nav-sumbit" data-toggle="modal" data-target="#submit-modal">Submit</a>
     <a class="nav-link d-none" href="#" id="nav-fav" data-toggle="modal" data-target="#fav-modal">Favorites</a>
-    <a class="nav-link d-none" href="#" id="nav-user-profile"></a>
+    <a class="nav-link d-none" href="#" id="nav-user" data-toggle="modal" data-target="#user-modal"></a>
     <!-- login dropdown -->
     <div class="btn-group dropdown">
       <a class="nav-link dropdown-toggle" data-toggle="dropdown" data-display="static" href="#">Login</a>
       <div class="dropdown-menu dropdown-menu-right px-3 py-2" id="login-dropdown">
         <form id="login-form">
           <div class="form-group">
-            <label for="username-login">Username</label>
-            <input type="text" class="form-control" id="username-login">
+            <label for="login-username">Username</label>
+            <input type="text" class="form-control" id="login-username" autocomplete="username">
           </div>
           <div class="form-group">
-            <label for="pwd-login">Password</label>
-            <input type="password" class="form-control" id="pwd-login">
+            <label for="login-pwd">Password</label>
+            <input type="password" class="form-control" id="login-pwd" autocomplete="current-password">
+            <small class="form-text text-danger" id="login-err-msg">Wrong username or password</small>
           </div>
           <div class="row d-flex justify-content-around">
             <button class="btn btn-primary col-4">Sign in</button>
-            <button class="btn btn-outline-secondary col-4" data-toggle="modal" data-target="#auth-modal" type="reset" id="sign-up-btn">Sign up</button>
+            <button class="btn btn-outline-secondary col-4" data-toggle="modal" data-target="#signup-modal" type="reset" id="sign-up-btn">Sign up</button>
           </div>
         </form>
       </div>
@@ -61,7 +62,7 @@
   </div>
 </nav>
 
-<!-- area for stories (all stories, user stories, favorites) -->
+<!-- area for stories (all stories) -->
 <section class="container bg-light p-3">
 
   <!-- loading message (removed by JS after stories loaded) -->
@@ -71,41 +72,41 @@
   <ol id="all-stories-list" class="stories-list"></ol>
 
 </section>
-<!-- Signup form -->
-<div class="modal fade" id="auth-modal" tabindex="-1" role="dialog">
+
+<!-- Signup Modal -->
+<div class="modal fade" id="signup-modal" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title"><b>Sign Up</b></h4>
+        <h4 class="modal-title"><b>Create Account</b></h4>
         <button type="button" class="close" data-dismiss="modal">
           <span>&times;</span>
         </button>
       </div>
 
-      <div class="modal-body">
-  
-        <!-- Signup form -->
-        <form action="#" id="signup-form" class="account-form" method="post">
-          <h4>Create Account</h4>
-          <div class="login-input">
-            <label for="signup-name">name</label>
-            <input id="signup-name" autocapitalize="words">
+      <!-- Signup form -->
+      <form id="signup-form" method="post">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="signup-name"><b>Name</b></label>
+            <input type="text" class="form-control" id="signup-name" placeholder="Enter your name" autocapitalize="words">
           </div>
-          <div class="login-input">
-            <label for="signup-username">username</label>
-            <input id="signup-username" autocomplete="new-username">
+          <div class="form-group">
+            <label for="signup-username"><b>Username</b></label>
+            <input type="text" class="form-control" id="signup-username" placeholder="Enter an username" autocomplete="new-username">
+            <small class="form-text text-danger" id="signup-err-msg">Username is taken</small>
           </div>
-          <div class="login-input">
-            <label for="signup-password">password</label>
-            <input id="signup-password" autocomplete="new-password" type="password">
+          <div class="form-group">
+            <label for="signup-password"><b>Password</b></label>
+            <input type="password" class="form-control" id="signup-password" placeholder="Enter a password" autocomplete="new-password">
           </div>
-          <button type="submit">create account</button>
-        </form>
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Create Account</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
@@ -120,6 +121,7 @@
           <span>&times;</span>
         </button>
       </div>
+
       <form id="submit-form">
         <div class="modal-body">
           <div class="form-group">
@@ -136,6 +138,7 @@
             data-toggle="popover" data-placement="top" data-content="The url is not valid.">
           </div>
         </div>
+        
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           <button type="submit" class="btn btn-primary" id="submit-story">Submit</button>
@@ -150,7 +153,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title" id="favModalLabel"><b>Favorite stories</b></h4>
+        <h4 class="modal-title"><b>Favorite stories</b></h4>
         <button type="button" class="close" data-dismiss="modal">
           <span>&times;</span>
         </button>
@@ -160,6 +163,60 @@
         <ol id="fav-stories-list" class="stories-list">
           No favorites yet!
         </ol>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- User Modal -->
+<div class="modal fade" id="user-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><b>User stories and settings</b></h4>
+        <button type="button" class="close" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- List of user stories -->
+        <ol id="user-stories-list" class="stories-list">
+          No stories yet!
+        </ol>
+      </div>
+      <div class="modal-footer">
+        <div class="dropdown">
+          <button class="btn btn-outline-danger dropdown-toggle" data-toggle="dropdown">Delete User</button>
+          <div class="dropdown-menu dropdown-menu-right p-3" id="user-del-dropdown">
+            <div class="alert alert-danger">Are you sure?</div>
+            <div class="row d-flex justify-content-around">
+              <button class="btn btn-danger" id="user-del-btn">YES</button>
+              <button class="btn btn-secondary">NO</button>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-primary" id="user-edit-open" data-dismiss="modal">Edit User</button>
+        <button class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal fade" id="user-edit-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><b>User stories and settings</b></h4>
+        <button type="button" class="close" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <button type="button" class="btn btn-danger" id="user-del-btn">Delete User</button>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

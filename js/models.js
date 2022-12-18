@@ -147,6 +147,17 @@ class User {
     );
   }
 
+  /** Delete user from API */
+  async delete() {
+    const { username, loginToken } = this;
+
+    await axios({
+      url: `${BASE_URL}/users/${username}`,
+      method: "DELETE",
+      data: { token: loginToken },
+    });
+  }
+
   /** When we already have credentials (token & username) for a user,
    *   we can log them in automatically. This function does that. */
   static async loginViaStoredCredentials(token, username) {
@@ -175,7 +186,7 @@ class User {
     }
   }
 
-  /** Add story to user favorites in api and  */
+  /** Add or remove favorite from user API*/
   async favStory(action, storyId) {
     const { username, loginToken } = this;
     const method = action === "add" ? "POST" : "DELETE";
@@ -188,11 +199,12 @@ class User {
     });
   }
 
-  async rmFavStory(storyId) {
-    const { username, loginToken } = this;
-    // Delete fav from user api (delete needs {data obj})
-    await axios.delete(`${BASE_URL}/users/${username}/favorites/${storyId}`, {
-      data: { token: loginToken },
+  /** Delete story from API */
+  async delStory(storyId) {
+    await axios({
+      url: `${BASE_URL}/stories/${storyId}`,
+      method: "DELETE",
+      data: { token: this.loginToken },
     });
   }
 }

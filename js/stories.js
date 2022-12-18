@@ -9,7 +9,10 @@ async function getAndShowStoriesOnStart() {
   $storiesLoadingMsg.remove();
 
   putStoriesOn($allStoriesList, storyList.stories);
-  if (currentUser) putStoriesOn($favStoriesList, currentUser.favorites);
+  if (currentUser) {
+    putStoriesOn($favStoriesList, currentUser.favorites);
+    putStoriesOn($userStoriesList, currentUser.ownStories);
+  }
 }
 
 /**
@@ -20,20 +23,26 @@ async function getAndShowStoriesOnStart() {
 function generateStoryMarkup(story) {
   // console.debug("generateStoryMarkup", story);
 
-  let favMkup = "";
+  let favMkup,
+    delMkup = "";
   if (currentUser) {
     // Get if fav or not
     const isFav = currentUser.favorites.some(
       (st) => st.storyId === story.storyId
     );
-
     favMkup = isFav ? "-solid fav fa-" : "-regular fa-";
+
+    const isUsr = currentUser.ownStories.some(
+      (st) => st.storyId === story.storyId
+    );
+    delMkup = isUsr ? "fa-regular fa-trash-can" : "display-none";
   }
 
   const hostName = story.getHostName();
   return $(`
-      <li id="${story.storyId}">
+      <li data-id="${story.storyId}">
         <i class="fa${favMkup}star"></i>
+        <i class="${delMkup}"></i>
         <a href="${story.url}" target="a_blank" class="story-link">
           ${story.title}
         </a>
@@ -47,7 +56,7 @@ function generateStoryMarkup(story) {
 /** Takes element location and list of stories, generates their HTML,
  *  and puts on selected element. */
 function putStoriesOn($element, stories) {
-  console.debug("putStoriesOn");
+  console.debug("putStoriesOn", $element);
 
   $element.empty();
 
@@ -91,22 +100,30 @@ $("#submit-story").on("click", async () => {
   const story = await StoryList.addStory(currentUser, { title, author, url });
   // Add story to global var
   storyList.stories.unshift(story);
+  currentUser.ownStories.push(story);
   putStoriesOn($allStoriesList, storyList.stories);
+  putStoriesOn($userStoriesList, currentUser.ownStories);
 
   // Dismiss and empty modal
   $("#submit-modal").modal("hide");
   $("#submit-form").trigger("reset");
 });
 
+// Removes story from a list by filtering out by id
+function rmStoryFrom(list, id) {
+  return list.filter(({ storyId }) => storyId !== id);
+}
+
 async function toggleFav(evt) {
   const $icon = $(evt.target);
-  const id = $icon.parent()[0].id;
+  const id = $icon.parent().data("id");
 
-  const action = $icon.hasClass("fav") ? "del" : "add";
+  const action = $icon.hasClass("fav") ? "rm" : "add";
 
-  // Toggle solid and fav classes
-  $(`#${id} i`).toggleClass("fav fa-solid fa-regular");
+  // Toggle solid and fav classes in all lists
+  $(`[data-id|="${id}"] i.fa-star`).toggleClass("fav fa-solid fa-regular");
 
+  // Add or remove story from user api favs
   await currentUser.favStory(action, id);
 
   if (action === "add") {
@@ -114,16 +131,30 @@ async function toggleFav(evt) {
     const story = storyList.stories.find((st) => st.storyId === id);
     currentUser.favorites.push(story);
   } else {
-    // Remove fav from current user
-    currentUser.favorites = currentUser.favorites.filter(({ storyId }) => {
-      return storyId !== id;
-    });
+    // Remove story from favs
+    currentUser.favorites = rmStoryFrom(currentUser.favorites, id);
   }
 
   // Modify favorites modal list
   putStoriesOn($favStoriesList, currentUser.favorites);
 }
 
-// Event listeners for clicking on stars
-$allStoriesList.on("click", ".fa-star", toggleFav);
-$favStoriesList.on("click", ".fa-star", toggleFav);
+async function rmStory(evt) {
+  const $icon = $(evt.target);
+  const id = $icon.parent().data("id");
+
+  // Delete all li elements with data-id=<id>
+  $(`[data-id|="${id}"]`).remove();
+
+  // Remove story from api
+  await currentUser.delStory(id);
+
+  // Remove story from all story lists
+  currentUser.favorites = rmStoryFrom(currentUser.favorites, id);
+  currentUser.ownStories = rmStoryFrom(currentUser.ownStories, id);
+  storyList.stories = rmStoryFrom(storyList.stories, id);
+}
+
+// Event listeners for clicking on stars or trash
+$(".stories-list").on("click", ".fa-star", toggleFav);
+$(".stories-list").on("click", ".fa-trash-can", rmStory);

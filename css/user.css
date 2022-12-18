@@ -1,14 +1,26 @@
 /* Login and signup forms */
 
-.account-form button {
+/* .account-form button {
   width: 4rem;
   margin-left: 80px;
 }
 
-#signup-form button {
-  width: 8rem;
-}
-
 .account-forms-container {
   padding-left: 20px;
+} */
+
+#login-dropdown {
+  width: 30vw;
+}
+
+#login-err-msg {
+  opacity: 0;
+}
+
+#signup-err-msg {
+  opacity: 0;
+}
+
+#user-del-dropdown {
+  width: 11em
 }
