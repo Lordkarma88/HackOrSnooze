@@ -1,14 +1,5 @@
 /* Login and signup forms */
 
-/* .account-form button {
-  width: 4rem;
-  margin-left: 80px;
-}
-
-.account-forms-container {
-  padding-left: 20px;
-} */
-
 #login-dropdown {
   width: 30vw;
 }
@@ -17,10 +8,10 @@
   opacity: 0;
 }
 
-#signup-err-msg {
-  opacity: 0;
-}
-
 #user-del-dropdown {
   width: 11em
+}
+
+.popover-body {
+  color: #c00;
 }

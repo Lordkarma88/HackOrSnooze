@@ -25,17 +25,20 @@ function generateStoryMarkup(story) {
 
   let favMkup,
     delMkup = "";
+
+  // If no current user, the classes stay empty or invalid for BStrap
   if (currentUser) {
     // Get if fav or not
     const isFav = currentUser.favorites.some(
       (st) => st.storyId === story.storyId
-    );
+    ); // If so, make star solid, otherwise make it normal
     favMkup = isFav ? "-solid fav fa-" : "-regular fa-";
 
+    // Get if user submitted or not
     const isUsr = currentUser.ownStories.some(
       (st) => st.storyId === story.storyId
-    );
-    delMkup = isUsr ? "fa-regular fa-trash-can" : "display-none";
+    ); // If so, add trash icon, otherwise don't show
+    delMkup = isUsr ? "fa-regular fa-trash-can" : "";
   }
 
   const hostName = story.getHostName();
@@ -54,7 +57,7 @@ function generateStoryMarkup(story) {
 }
 
 /** Takes element location and list of stories, generates their HTML,
- *  and puts on selected element. */
+ *  and appends to selected element. */
 function putStoriesOn($element, stories) {
   console.debug("putStoriesOn", $element);
 
@@ -65,13 +68,11 @@ function putStoriesOn($element, stories) {
     $element.append("No stories yet!");
   }
 
-  // loop through all of our stories and generate HTML for them
+  // loop through all of the stories and generate HTML for them
   for (let story of stories) {
     const $story = generateStoryMarkup(story);
     $element.append($story);
   }
-
-  $element.show();
 }
 
 // Submit story handling
@@ -82,23 +83,19 @@ $("#submit-story").on("click", async () => {
   const title = $("#submit-title").val();
   const url = $("#submit-url").val();
 
-  // Do nothing if form is empty
-  if ((author === "") | (title === "")) return;
-  // Check if url is valid
+  // Do nothing if any form is empty
+  if (!author | !title | !url) return;
+
+  // Post story to API
+  let story;
   try {
-    new URL(url);
+    // Handle error if url is invalid
+    story = await StoryList.addStory(currentUser, { title, author, url });
   } catch (error) {
-    // If invalid, show popover for 5 sec (defined in index.html)
-    $("#submit-url").popover("show");
-    setTimeout(() => {
-      $("#submit-url").popover("hide");
-    }, 5000);
     return;
   }
 
-  // Post story to API
-  const story = await StoryList.addStory(currentUser, { title, author, url });
-  // Add story to global var
+  // Add story to global var and display it
   storyList.stories.unshift(story);
   currentUser.ownStories.push(story);
   putStoriesOn($allStoriesList, storyList.stories);
@@ -109,7 +106,7 @@ $("#submit-story").on("click", async () => {
   $("#submit-form").trigger("reset");
 });
 
-// Removes story from a list by filtering out by id
+/** Removes story from a list by filtering out by id */
 function rmStoryFrom(list, id) {
   return list.filter(({ storyId }) => storyId !== id);
 }
@@ -120,7 +117,7 @@ async function toggleFav(evt) {
 
   const action = $icon.hasClass("fav") ? "rm" : "add";
 
-  // Toggle solid and fav classes in all lists
+  // Toggle solid, regular and fav classes in all lists
   $(`[data-id|="${id}"] i.fa-star`).toggleClass("fav fa-solid fa-regular");
 
   // Add or remove story from user api favs
@@ -139,6 +136,7 @@ async function toggleFav(evt) {
   putStoriesOn($favStoriesList, currentUser.favorites);
 }
 
+/** Deletes story from api and all lists it is on */
 async function rmStory(evt) {
   const $icon = $(evt.target);
   const id = $icon.parent().data("id");

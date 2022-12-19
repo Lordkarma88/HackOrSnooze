@@ -4,23 +4,10 @@
  * Handling navbar clicks and updating navbar
  */
 
-/** Show main list of all stories when click site name */
-// function navAllStories(evt) {
-//   console.debug("navAllStories", evt);
-//   hidePageComponents();
-//   putStoriesOn($allStoriesList, storyList.stories);
-// }
-
-// $body.on("click", "#nav-all", navAllStories);
-
-// /** When a user first logins in, update the navbar to reflect that. */
-// function updateNavOnLogin() {
-//   console.debug("updateNavOnLogin");
-// }
-
 /** Hide dropdown when button is clicked inside */
 $("#login-dropdown #sign-up-btn").on("click", hideLogin);
 
+/** Hide login dropdown and reset errors */
 function hideLogin() {
   $("#login-dropdown").dropdown("toggle");
   // Prevents dropdown from going away on any click
@@ -29,8 +16,24 @@ function hideLogin() {
   $("#login-err-msg").css("opacity", 0);
 }
 
+/** Shows error popovers for 5 seconds */
+function showErrorAt(element) {
+  $(element).popover("enable");
+  $(element).popover("show");
+  setTimeout(() => {
+    $(element).popover("disable");
+    $(element).popover("hide");
+  }, 5000);
+}
+
 // Reset modal when closed
 $("#signup-modal").on("hidden.bs.modal", () => {
-  $("#signup-err-msg").css("opacity", 0);
   $signupForm.trigger("reset");
+});
+
+// Show user edit modal after other one closes
+$("#user-edit-open").on("click", () => {
+  setTimeout(() => {
+    $("#user-edit-modal").modal("show");
+  }, 310);
 });

@@ -147,6 +147,42 @@ class User {
     );
   }
 
+  /** Edit user name or password, make user instance
+   * from response and return it.
+   * - type: name or password
+   * - newString: what the new type will be */
+  async edit(type, newString) {
+    const { username, loginToken } = this;
+    const user = {};
+    if (type === "name") {
+      user.name = newString;
+    } else if (type === "password") {
+      user.password = newString;
+    } else return;
+
+    const response = await axios({
+      url: `${BASE_URL}/users/${username}`,
+      method: "PATCH",
+      data: {
+        token: loginToken,
+        user,
+      },
+    });
+
+    let newUser = response.data.user;
+
+    return new User(
+      {
+        username: newUser.username,
+        name: newUser.name,
+        createdAt: newUser.createdAt,
+        favorites: newUser.favorites,
+        ownStories: newUser.stories,
+      },
+      loginToken
+    );
+  }
+
   /** Delete user from API */
   async delete() {
     const { username, loginToken } = this;

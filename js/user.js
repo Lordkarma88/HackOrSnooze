@@ -8,7 +8,6 @@ let currentUser;
  */
 
 /** Handle login form submission. If login ok, sets up the user instance */
-
 async function login(evt) {
   console.debug("login", evt);
   evt.preventDefault();
@@ -53,7 +52,7 @@ async function signup(evt) {
   try {
     currentUser = await User.signup(username, password, name);
   } catch (error) {
-    $("#signup-err-msg").css("opacity", 100);
+    showErrorAt("#signup-username");
     return;
   }
 
@@ -81,6 +80,62 @@ $navLogOut.on("click", logout);
 $("#user-del-btn").on("click", async () => {
   await currentUser.delete();
   logout();
+});
+
+/** Handle click of user edit button */
+$("#edit-user-form").on("submit", async () => {
+  const currPass = $("#current-password").val();
+  const newName = $("#new-name").val();
+  const newPass1 = $("#new-pass-1").val();
+  const newPass2 = $("#new-pass-2").val();
+
+  if (
+    // Exit if:
+    !currPass | // no currPass OR
+    (!newName & !newPass1 & !newPass2) // all others empty
+  )
+    return;
+
+  // If all others full
+  if (!!newName & !!newPass1 & !!newPass2) {
+    showErrorAt("#new-name");
+    $("#new-name").val("");
+    return;
+  }
+
+  // If newPass1 & 2 don't match
+  if (newPass1 !== newPass2) {
+    showErrorAt("#new-pass-2");
+    return;
+  }
+
+  // If pass is invalid
+  try {
+    await User.login(currentUser.username, currPass);
+  } catch (error) {
+    showErrorAt("#current-password");
+    return;
+  }
+
+  // If newPass same as currPass
+  if (currPass === newPass1) {
+    showErrorAt("#new-pass-1");
+    return;
+  }
+
+  const type = newName ? "name" : "password";
+  // Edit user api
+  if (newName) currentUser = await currentUser.edit(type, newName);
+  else currentUser = await currentUser.edit(type, newPass1);
+
+  // Add message at bottom of modal
+  $("#edit-user-success .alert").text(`Your ${type} was successfully changed.`);
+  $("#edit-user-success").collapse("show");
+  setTimeout(() => {
+    $("#edit-user-success").collapse("hide");
+  }, 5000);
+  // Empty forms
+  $("#edit-user-form").trigger("reset");
 });
 
 /******************************************************************************
@@ -122,14 +177,14 @@ function saveUserCredentialsInLocalStorage() {
  *
  * - show the stories list
  * - update nav bar options for logged-in user
- * - generate the user profile part of the page
  */
 function updateUIOnUserLogin() {
   console.debug("updateUIOnUserLogin");
 
-  // Update all stories to show favs
+  // Update all stories to show favs and fill other two lists
   putStoriesOn($allStoriesList, storyList.stories);
   putStoriesOn($favStoriesList, currentUser.favorites);
+  putStoriesOn($userStoriesList, currentUser.ownStories);
 
   // Hide login and show everything else
   $(".nav-link").toggleClass("d-none");
